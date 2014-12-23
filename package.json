@@ -11,7 +11,9 @@
     "test": "mocha --reporter tap --timeout 10000"
   },
   "dependencies": {
-    "id3js": "*"
+    "id3js": "*",
+    "find": "*",
+    "q": "*"
   },
   "devDependencies": {
   },
