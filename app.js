@@ -14,7 +14,14 @@ function file_spec(file_path) {
   return q.promise(function(resolve, reject, notify) {
     try {
       id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
-        if (err) return reject(err);
+        if (err) {
+	  return resolve({
+            title: '',
+            artist: '',
+            album: '',
+            path: file_path
+          });
+	}	
         var spec = {
           title: tags.title,
           artist: tags.artist,
@@ -47,16 +54,23 @@ function file_spec(file_path) {
         return resolve(spec);
       });
     } catch(e) {
-      return reject(e);
+      return resolve({
+        title: '',
+        artist: '',
+        album: '',
+        path: file_path
+      });
     }
   });
 }
+
+//find.__errorHandler = function(err) { console.log(err); };
 
 find.file(/\.mp3$/, dir_path, function(files) {
   var file_specs = [];
 
   if (fs.existsSync(index)) {
-    var index_json = fs.readFileSync(dir_path, {encoding: 'utf8'});
+    var index_json = fs.readFileSync(index, {encoding: 'utf8'});
     file_specs = JSON.parse(index_json);
   }
 
@@ -83,4 +97,4 @@ find.file(/\.mp3$/, dir_path, function(files) {
     //XXX There really needs to be a better way to index all this stuff.
     fs.writeFileSync(index, JSON.stringify(spec_list), {encoding: 'utf8'});
   }).fail(function(err) { throw err; });
-});
+}).error(function(err) { console.log(err); });
