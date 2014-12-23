@@ -1,0 +1,22 @@
+{
+  "name": "mp3index",
+  "version": "0.1.0",
+  "private": true,
+  "contributer": {
+    "name": "Michael C Riehle",
+    "email": "mriehle@mriehle.com"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha --reporter tap --timeout 10000"
+  },
+  "dependencies": {
+    "id3js": "*"
+  },
+  "devDependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aikimcr/mp3index.git"
+  }
+}
