@@ -1,6 +1,9 @@
 crypto
 public/javascripts/lib
 public/test/lib
+public/stylesheets/style.css
+index.json
+dir_path
 
 *~
 lib-cov

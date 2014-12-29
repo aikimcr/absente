@@ -64,21 +64,6 @@ function file_spec(file_path) {
   });
 }
 
-function index_row(index_obj, row, index, index_keys) {
-  if (index_keys.length > 0) {
-    var current_key = index_keys.shift();
-    if (current_key in row) current_key = row[current_key];
-    if (index_keys.length > 0) {
-      if (!index_obj[current_key]) index_obj[current_key] = {};
-      index_row(index_obj[current_key], row, index, index_keys);
-    } else if (index_obj[current_key]) {
-      index_obj[current_key].push(index);
-    } else {
-      index_obj[current_key] = [index];
-    }
-  }
-}
-
 find.file(/\.mp3$/, dir_path, function(files) {
   var file_specs = [];
 
@@ -91,27 +76,7 @@ find.file(/\.mp3$/, dir_path, function(files) {
     file_specs.push(file_spec(file));
   });
 
-  var specs_by_artist = {};
-  var specs_by_title = {};
-  var specs_by_album = {};
-
   q.all(file_specs).then(function(spec_list) {
-    spec_list.forEach(function(spec, index) {
-      index_row(specs_by_artist, spec, index, ['artist', 'titles', 'title', 'album']);
-      index_row(specs_by_artist, spec, index, ['artist', 'albums', 'album', 'title']);
-      index_row(specs_by_title, spec, index, ['title', 'artists', 'artist', 'album']);
-      index_row(specs_by_title, spec, index, ['title', 'albums', 'album', 'artist']);
-      index_row(specs_by_album, spec, index, ['album', 'artists', 'artist', 'title']);
-      index_row(specs_by_album, spec, index, ['album', 'titles', 'title', 'artist']);
-    });
-
-    var result = {
-      rows: spec_list,
-      artists: specs_by_artist,
-      titles: specs_by_title,
-      albums: specs_by_album
-    };
-
-    fs.writeFileSync(index, JSON.stringify(result), {encoding: 'utf8'});
+    fs.writeFileSync(index, JSON.stringify(spec_list), {encoding: 'utf8'});
   }).fail(function(err) { throw err; });
 }).error(function(err) { console.log(err); });
