@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  table
+    thead
+      tr
+        th
+        th Artist
+        th Album
+        th Title
+        th File
+        th
+
+    tbody
+      each song, index in song_list
+        tr
+          td= index
+          td= song.artist
+          td= song.album
+          td= song.title
+          td= song.path
+          td
+            a(href='/file_spec/' + index) Spec

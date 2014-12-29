@@ -1,3 +1,4 @@
+var id3 = require('id3js');
 var fs = require('fs');
 var path = require('path');
 
@@ -21,6 +22,32 @@ function MP3Index(opt_dir_path) {
   this.rows_by_title = {};
   this.rows_by_album = {};
 }
+
+MP3Index.empty_spec = {
+  title: '',
+  artist: '',
+  album: '',
+  path: ''
+};
+
+MP3Index.prototype.getFileSpec = function(file_path, cb) {
+  try {
+    id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
+      if (err) return cb(err);
+      return cb(null, tags);
+    });
+  } catch(err) {
+    return cb(err);
+  }
+};
+
+MP3Index.prototype.getRowSpec = function(row_index, cb) {
+  if (this.rows[row_index]) {
+    return this.getFileSpec(this.rows[row_index].path, cb);
+  } else {
+    return cb(new Error('No such row'));
+  }
+};
 
 MP3Index.prototype.buildIndeces = function() {
   this.rows_by_artist = {};

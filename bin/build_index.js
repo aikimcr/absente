@@ -67,11 +67,6 @@ function file_spec(file_path) {
 find.file(/\.mp3$/, dir_path, function(files) {
   var file_specs = [];
 
-  if (fs.existsSync(index)) {
-    var index_json = fs.readFileSync(index, {encoding: 'utf8'});
-    file_specs = JSON.parse(index_json);
-  }
-
   files.forEach(function(file) {
     file_specs.push(file_spec(file));
   });
