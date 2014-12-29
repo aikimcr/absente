@@ -1,6 +1,6 @@
+crypto
 public/javascripts/lib
 public/test/lib
-reports
 
 *~
 lib-cov

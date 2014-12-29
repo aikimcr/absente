@@ -1,5 +1,5 @@
 {
-  "name": "mp3index",
+  "name": "absente",
   "version": "0.1.0",
   "private": true,
   "contributer": {
@@ -24,6 +24,16 @@
     "q": "*"
   },
   "devDependencies": {
+    "deep-diff": "*",
+    "grunt": "*",
+    "grunt-bower-concat": "*",
+    "grunt-bower-task": "*",
+    "grunt-bower-install-simple": "*",
+    "grunt-bower-clean": "*",
+    "grunt-exec": "*",
+    "grunt-mkdir": "*",
+    "grunt-shell": "*",
+    "should": "*"
   },
   "repository": {
     "type": "git",
