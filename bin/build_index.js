@@ -15,6 +15,7 @@ function file_spec(file_path) {
     try {
       id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
         if (err) {
+	  console.log('id3 error:' + util.inspect(err));
 	  return resolve({
             title: '',
             artist: '',
@@ -54,6 +55,7 @@ function file_spec(file_path) {
         return resolve(spec);
       });
     } catch(e) {
+      console.log('Node error: ' + util.inspect(e));
       return resolve({
         title: '',
         artist: '',

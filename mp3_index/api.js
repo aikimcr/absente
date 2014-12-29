@@ -11,7 +11,6 @@ router.get('/', function(req, res) {
 
 router.get('/file_spec/:row_index', function(req, res) {
   mp3_index.getIndex();
-  console.log(req.params.row_index);
   mp3_index.getRowSpec(req.params.row_index, function(err, spec) {
     if (err) {
       console.log(err);
