@@ -2,6 +2,7 @@ var id3 = require('id3js');
 var fs = require('fs');
 var path = require('path');
 var uid = require('uid');
+var util = require('util');
 
 function MP3Index(opt_dir_path) {
   if (opt_dir_path) {

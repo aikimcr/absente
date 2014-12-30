@@ -10,12 +10,9 @@ var dir_path = process.argv[2];
 var index_file = path.join(dir_path, 'index.json');
 
 function file_spec(file_path, callback) {
-
   mp3_index.getFileSpec(file_path, function(err, tags) {
-    if (err) {
-      callback(err);
-    }
-    callback(null, mp3_index.rowFromSpec(file_path, tags));
+    if (err) return callback(err);
+    return callback(null, mp3_index.rowFromSpec(file_path, tags));
   });
 }
 
@@ -28,11 +25,12 @@ find.file(/\.mp3$/, dir_path, function(files) {
     var spec = file_spec(file, function(err, spec) {
       if (err) {
         console.log(err);
+        file_specs[index] = mp3_index.empty_spec;
+        count--;
+      } else {
+        file_specs[index] = spec;
         count--;
       }
-
-      file_specs[index] = spec;
-      count--;
 
       process.nextTick(function() {
         process.stdout.write(util.format('%d Files left     \r', count));
