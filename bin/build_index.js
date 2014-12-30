@@ -13,7 +13,6 @@ function file_spec(file_path, callback) {
 
   mp3_index.getFileSpec(file_path, function(err, tags) {
     if (err) {
-      console.log(err);
       callback(err);
     }
     callback(null, mp3_index.rowFromSpec(file_path, tags));
@@ -22,17 +21,25 @@ function file_spec(file_path, callback) {
 
 find.file(/\.mp3$/, dir_path, function(files) {
   var count = files.length;
+  process.stdout.write(util.format('%d files found\n', count));
   var file_specs = [];
 
   files.forEach(function(file, index) {
     var spec = file_spec(file, function(err, spec) {
+      if (err) {
+        console.log(err);
+        count--;
+      }
+
       file_specs[index] = spec;
       count--;
 
       process.nextTick(function() {
+        process.stdout.write(util.format('%d Files left     \r', count));
         if (count === 0) {
           process.nextTick(function() {
             fs.writeFileSync(index_file, JSON.stringify(file_specs), {encoding: 'utf8'});
+            process.stdout.write('\nFinished\n');
           });
         }
       });
