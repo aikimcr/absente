@@ -69,14 +69,20 @@ MP3Index.prototype.rowFromSpec = function(file_path, tags) {
 };
 
 MP3Index.prototype.getFileSpec = function(file_path, cb) {
-  try {
-    id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
-      if (err) return cb(err);
-      return cb(null, tags);
-    });
-  } catch(err) {
-    return cb(err);
-  }
+  fs.exists(file_path, function(exists) {
+    if (exists) {
+      try {
+        id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
+          if (err) return cb('File ' + file_path + ': ' + util.inspect(err));
+          return cb(null, tags);
+        });
+      } catch(err) {
+        return cb(err);
+      }
+    } else {
+      return cb(new Error('File "' + file_path + '" does not exist!'));
+    }
+  });
 };
 
 MP3Index.prototype.getRowSpec = function(row_index, cb) {
