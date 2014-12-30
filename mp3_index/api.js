@@ -9,16 +9,22 @@ router.get('/', function(req, res) {
   res.json(mp3_index.rows);
 });
 
-router.get('/file_spec/:row_index', function(req, res) {
+router.get('/file_spec/:uid', function(req, res) {
   mp3_index.getIndex();
-  mp3_index.getRowSpec(req.params.row_index, function(err, spec) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
+  var row = mp3_index.getRowByUID(req.params.uid);
 
-    res.json(spec);
-  });
+  if (row) {
+    mp3_index.getFileSpec(row.path, function(err, spec) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+
+      res.json(spec);
+    });
+  } else {
+    res.status(404).send('No such file entry');
+  }
 });
 
 router.get('/all_rows', function(req, res) {

@@ -1,6 +1,7 @@
 var id3 = require('id3js');
 var fs = require('fs');
 var path = require('path');
+var uid = require('uid');
 
 function MP3Index(opt_dir_path) {
   if (opt_dir_path) {
@@ -23,11 +24,48 @@ function MP3Index(opt_dir_path) {
   this.rows_by_album = {};
 }
 
-MP3Index.empty_spec = {
-  title: '',
-  artist: '',
-  album: '',
-  path: ''
+MP3Index.prototype.empty_spec = function() {
+  return {
+    uid: '',
+    title: '',
+    artist: '',
+    album: '',
+    path: ''
+  };
+};
+
+MP3Index.prototype.normalizeTag_ = function(tag_value) {
+  var old_tag = tag_value;
+  try {
+    return tag_value.replace(/\u0000/g, '');
+  } catch(e) {
+    return old_tag;
+  }
+};
+
+MP3Index.prototype.setVSpec = function(vspec, spec) {
+  ['track', 'title', 'artist', 'album'].forEach(function(tagname) {
+    if (vspec[tagname]) {
+      var tag_value = this.normalizeTag_(vspec[tagname]);
+      if (tag_value.length > 0) spec[tagname] = tag_value;
+    }
+  }.bind(this));
+};
+
+MP3Index.prototype.rowFromSpec = function(file_path, tags) {
+  var spec = {
+    uid: uid(32),
+    title: this.normalizeTag_(tags.title),
+    artist: this.normalizeTag_(tags.artist),
+    album: this.normalizeTag_(tags.album),
+    path: this.normalizeTag_(file_path),
+    track: -1
+  }
+
+  if (tags.v1) this.setVSpec(tags.v1, spec);
+  if (tags.v2) this.setVSpec(tags.v2, spec);
+
+  return spec;
 };
 
 MP3Index.prototype.getFileSpec = function(file_path, cb) {
@@ -47,6 +85,14 @@ MP3Index.prototype.getRowSpec = function(row_index, cb) {
   } else {
     return cb(new Error('No such row'));
   }
+};
+
+MP3Index.prototype.getRowByUID = function(uid) {
+  var match = this.rows.filter(function(row) {
+    return row.uid === uid;
+  });
+  if (match.length > 0) return match[0];
+  return null;
 };
 
 MP3Index.prototype.buildIndeces = function() {
