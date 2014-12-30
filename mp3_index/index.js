@@ -1,3 +1,4 @@
+var mm = require('musicmetadata');
 var id3 = require('id3js');
 var fs = require('fs');
 var path = require('path');
@@ -54,6 +55,7 @@ MP3Index.prototype.setVSpec = function(vspec, spec) {
 };
 
 MP3Index.prototype.rowFromSpec = function(file_path, tags) {
+/*
   var spec = {
     uid: uid(32),
     title: this.normalizeTag_(tags.title),
@@ -67,11 +69,21 @@ MP3Index.prototype.rowFromSpec = function(file_path, tags) {
   if (tags.v2) this.setVSpec(tags.v2, spec);
 
   return spec;
+*/
+  return {
+    uid: uid(32),
+    title: tags.title,
+    artist: tags.artist,
+    album: tags.album,
+    path: file_path,
+    track: tags.track.no
+  };
 };
 
 MP3Index.prototype.getFileSpec = function(file_path, cb) {
   fs.exists(file_path, function(exists) {
     if (exists) {
+/*
       try {
         id3({file: file_path, type: id3.OPEN_LOCAL}, function(err, tags) {
           if (err) return cb('File ' + file_path + ': ' + util.inspect(err));
@@ -80,6 +92,18 @@ MP3Index.prototype.getFileSpec = function(file_path, cb) {
       } catch(err) {
         return cb(err);
       }
+*/
+      var stream = fs.createReadStream(file_path);
+      var parser = mm(stream);
+
+      parser.on('metadata', function (result) {
+        cb(null, result);
+      });
+
+      parser.on('done', function(err) {
+        if (err) cb(err);
+        stream.destroy();
+      });
     } else {
       return cb(new Error('File "' + file_path + '" does not exist!'));
     }
