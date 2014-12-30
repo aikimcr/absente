@@ -93,17 +93,23 @@ MP3Index.prototype.getFileSpec = function(file_path, cb) {
         return cb(err);
       }
 */
-      var stream = fs.createReadStream(file_path);
-      var parser = mm(stream);
+      var stream;
 
-      parser.on('metadata', function (result) {
-        cb(null, result);
-      });
+      try {
+        stream = fs.createReadStream(file_path);
+        var parser = mm(stream);
 
-      parser.on('done', function(err) {
-        if (err) cb(err);
-        stream.destroy();
-      });
+        parser.on('metadata', function (result) {
+          cb(null, result);
+        });
+
+        parser.on('done', function(err) {
+          if (err) cb(err);
+          stream.destroy();
+        });
+      } catch(err) {
+        cb('Error opening "' + file_path + '":' + err);
+      }
     } else {
       return cb(new Error('File "' + file_path + '" does not exist!'));
     }
